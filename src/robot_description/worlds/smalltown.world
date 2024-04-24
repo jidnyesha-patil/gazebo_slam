@@ -4072,14 +4072,6 @@
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
-    
-    <!-- Import our own robot -->
-    <include>
-      <!-- Set the location where we want to spawn the robot -->
-      <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
-      <!-- basic_mobile_robot -->
-      <uri>model://mobile_robot</uri>
-    </include>
   </world>
 </sdf>
 
