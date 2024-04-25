@@ -5,12 +5,13 @@
 
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.event_handlers import OnProcessExit
 
 def generate_launch_description():
 
@@ -107,6 +108,10 @@ def generate_launch_description():
     'robot_description': Command(['xacro ', model])}],
     arguments=[default_model_path])
 
+  spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',
+                        arguments=['-topic', 'robot_description',
+                                   '-entity', 'mobile_robot'],
+                        output='screen')
   # Launch RViz
   start_rviz_cmd = Node(
     condition=IfCondition(use_rviz),
@@ -135,6 +140,7 @@ def generate_launch_description():
   ld.add_action(start_gazebo_client_cmd)
   ld.add_action(start_robot_localization_cmd)
   ld.add_action(start_robot_state_publisher_cmd)
+  ld.add_action(spawn_entity)
   ld.add_action(start_rviz_cmd)
 
   return ld
