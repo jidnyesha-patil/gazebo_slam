@@ -3,8 +3,6 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import Joy
 
-import keyboard
-
 class keyboard_teleop(Node):
     def __init__(self):
         super().__init__('keyboard_teleop')
