@@ -37,7 +37,7 @@ def get_data(folder_path):
     
 
     #k parameter
-    datahandler['k'] = 
+    datahandler['k'] = []
     return dataset_handler
 
 
