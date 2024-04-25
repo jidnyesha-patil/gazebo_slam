@@ -6,9 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /TF1/Frames1
-        - /LaserScan1
       Splitter Ratio: 0.5647059082984924
-    Tree Height: 309
+    Tree Height: 371
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
@@ -211,7 +210,21 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /camera/image_raw
+        Value: /depth_camera/image_raw
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Depth
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /depth_camera/depth/image_raw
       Value: true
   Enabled: true
   Global Options:
@@ -258,25 +271,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 14.697385787963867
+      Distance: 15.266746520996094
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 8.408124923706055
-        Y: -4.254729747772217
-        Z: 0.41143372654914856
+        X: 3.4423296451568604
+        Y: -0.7162990570068359
+        Z: -1.0019612312316895
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.2397966384887695
+      Pitch: 1.0247968435287476
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 3.122377872467041
+      Yaw: 3.102377414703369
     Saved:
       - Class: rviz_default_plugins/Orbit
         Distance: 100
@@ -319,16 +332,18 @@ Visualization Manager:
         Value: Orbit (rviz_default_plugins)
         Yaw: -1.5707963705062866
 Window Geometry:
+  Depth:
+    collapsed: false
   Displays:
     collapsed: false
-  Height: 1043
+  Height: 1016
   Hide Left Dock: false
   Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000200000000000001de000003b9fc0200000003fb000000100044006900730070006c006100790073010000003d000001b8000000c900fffffffb0000000a00560069006500770073020000055e0000012a000001de000000a6fb0000000a0049006d00610067006501000001fb000001fb0000002800ffffff0000000100000100000003b9fc0200000001fb0000000a00560069006500770073000000003d000003b9000000a400ffffff00000556000003b900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000001de0000039efc0200000005fb000000100044006900730070006c006100790073010000003d000001f6000000c900fffffffb0000000a00560069006500770073020000055e0000012a000001de000000a6fb0000000a0049006d006100670065010000022a000000e00000000000000000fb0000000a004400650070007400680100000239000000d10000002800fffffffb0000000a0049006d0061006700650100000310000000cb0000002800ffffff0000000100000100000003b9fc0200000001fb0000000a00560069006500770073000000003d000003b9000000a400ffffff000005560000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: true
   Width: 1850
   X: 70
-  Y: 0
+  Y: 27
