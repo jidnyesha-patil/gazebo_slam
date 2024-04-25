@@ -113,11 +113,11 @@
     <!-- Connect the wheels to the base_link at the appropriate location, and 
          define a continuous joint to allow the wheels to freely rotate about
          an axis -->
-    <joint name="${prefix}_joint" type="revolute">
+    <joint name="${prefix}_joint" type="continuous">
       <parent link="base_link"/>
       <child link="${prefix}_link"/>
       <origin xyz="${x_reflect*wheel_xoff} ${y_reflect*(base_width/2+wheel_ygap)} ${-wheel_zoff}" rpy="0 0 0"/>
-      <limit upper="3.1415" lower="-3.1415" effort="30" velocity="5.0"/>
+      <!-- <limit upper="3.1415" lower="-3.1415" effort="30" velocity="5.0"/> -->
       <axis xyz="0 1 0"/>
     </joint>
   </xacro:macro>
@@ -311,7 +311,7 @@
 
 
 <!-- *********************** CAMERA SETUP **********************************  -->
-  <!-- <joint name="camera_joint" type="fixed">
+  <joint name="camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
     <origin xyz="${base_length/2} 0 0" rpy="0 0 0"/>  
@@ -342,7 +342,7 @@
     <sensor name="camera" type="camera">
         <pose> 0 0 0 0 0 0 </pose>
         <visualize>true</visualize>
-        <update_rate>10</update_rate>
+        <update_rate>30</update_rate>
         <camera>
           <horizontal_fov>1.27</horizontal_fov>
           <image>
@@ -359,15 +359,39 @@
           <frame_name>camera_optical_link</frame_name>
         </plugin>
     </sensor>
-  </gazebo> -->
+  </gazebo>
 
   <!-- Optical link / joint for converting from camera coordinate system to ROS coordinate system-->
-  <!-- <joint name="camera_optical_joint" type="fixed">
+  <joint name="camera_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
       <parent link="camera_link"/>
       <child link="camera_optical_link"/>
   </joint>
 
-  <link name="camera_optical_link"></link> -->
+  <link name="camera_optical_link"></link>
+
+  <!--  DEPTH CAMERA SETUP   -->
+  <gazebo reference="camera_link">
+    <sensor name="depth_camera" type="depth">
+        <pose> 0 0 0 0 0 0 </pose>
+        <visualize>true</visualize>
+        <update_rate>30</update_rate>
+        <camera>
+          <horizontal_fov>1.27</horizontal_fov>
+          <image>
+            <format>B8G8R8</format>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.4</near>
+            <far>8</far>
+          </clip>
+        </camera>
+        <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
+          <frame_name>camera_optical_link</frame_name>
+        </plugin>
+    </sensor>
+  </gazebo>
 
   </robot>
