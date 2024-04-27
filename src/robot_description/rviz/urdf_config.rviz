@@ -7,7 +7,7 @@ Panels:
         - /Global Options1
         - /TF1/Frames1
       Splitter Ratio: 0.5647059082984924
-    Tree Height: 371
+    Tree Height: 360
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
@@ -226,6 +226,34 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /depth_camera/depth/image_raw
       Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz_default_plugins/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /trajectory
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -264,6 +292,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: initialpose
+    - Class: rviz_default_plugins/FocusCamera
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
@@ -341,7 +370,7 @@ Window Geometry:
   Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000200000000000001de0000039efc0200000005fb000000100044006900730070006c006100790073010000003d000001f6000000c900fffffffb0000000a00560069006500770073020000055e0000012a000001de000000a6fb0000000a0049006d006100670065010000022a000000e00000000000000000fb0000000a004400650070007400680100000239000000d10000002800fffffffb0000000a0049006d0061006700650100000310000000cb0000002800ffffff0000000100000100000003b9fc0200000001fb0000000a00560069006500770073000000003d000003b9000000a400ffffff000005560000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000001de0000039efc0200000005fb000000100044006900730070006c006100790073010000003d000001eb000000c900fffffffb0000000a00560069006500770073020000055e0000012a000001de000000a6fb0000000a0049006d006100670065010000022e000000db0000002800fffffffb0000000a00440065007000740068010000030f000000cc0000002800fffffffb0000000a0049006d0061006700650100000310000000cb00000000000000000000000100000100000003b9fc0200000001fb0000000a00560069006500770073000000003d000003b9000000a400ffffff000005560000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: true
   Width: 1850

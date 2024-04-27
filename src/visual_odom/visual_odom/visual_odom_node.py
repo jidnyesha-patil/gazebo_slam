@@ -37,7 +37,13 @@ class VisualOdometryNode(Node):
         self.curr_idx=0
         self.frame_count=0
 
+        self.camera_optical_to_base_tf = [[0.0 , 0.362 , 0.932 , 0.35],[-1.0 , 0.0 , -0.0 , -0.0],[0.0 , -0.932 , 0.362 , 0.0],[0.0 , 0.0 , 0.0 , 1.0]]
+
         self.robot_pose = np.zeros((1,4,4))
+        self.robot_pose[0]=np.eye(4)
+
+        self.camera_pose = np.zeros((1,4,4))
+        self.camera_pose[0]=np.eye(4)
         
         self.trajectory = np.zeros((3, 1))
 
@@ -50,6 +56,10 @@ class VisualOdometryNode(Node):
 
         # Path message
         self.path_msg = Path()
+
+        # Visualization 
+        cv2.namedWindow("features",cv2.WINDOW_NORMAL)
+        cv2.namedWindow("matches",cv2.WINDOW_NORMAL)
 
     # def get_camera_info(self,info_msg):
     #     if self.K is not None:
@@ -85,6 +95,7 @@ class VisualOdometryNode(Node):
 
             # TO - DO : Feature extraction
             kp,des = self.extract_frame_features(img_frame)
+            self.visualize_features(img_frame,kp)
             self.kp_array.append(kp)
             self.des_array.append(des)
 
@@ -93,7 +104,7 @@ class VisualOdometryNode(Node):
                 #Feature Matching
                 match = self.match_feature(self.des_array[self.curr_idx-1],self.des_array[self.curr_idx])
                 self.matches_array.append(match)
-
+                self.visualize_matches(self.prev_img_frame,self.kp_array[self.curr_idx-1],self.curr_img_frame,self.kp_array[self.curr_idx],match)
                 #Estimate Motion
                 rmat, tvec, image1_points, image2_points = self.estimate_motion(match,self.kp_array[self.curr_idx-1],self.kp_array[self.curr_idx],self.K, self.prev_depth_frame)
                 
@@ -107,9 +118,7 @@ class VisualOdometryNode(Node):
         self.frame_count += 1
 
     def extract_frame_features(self,image):
-        
-        kp,des = self.sift.detectAndCompute(image,None)
-        
+        kp,des = self.sift.detectAndCompute(image,None)        
         return kp,des
 
     def match_feature(self,des1,des2):
@@ -164,7 +173,7 @@ class VisualOdometryNode(Node):
             s = depth1[int(v1), int(u1)]
             
             # Check for valid scale values
-            if s < 8.0:
+            if s < 100.0:
                 # Transform pixel coordinates to camera coordinates using the pinhole camera model
                 p_c = np.linalg.inv(k) @ (s * np.array([u1, v1, 1]))
                 
@@ -178,10 +187,15 @@ class VisualOdometryNode(Node):
         imagepoints = np.array(image2_points)
         
         # Determine the camera pose from the Perspective-n-Point solution using the RANSAC scheme
-        _, rvec, tvec, _ = cv2.solvePnPRansac(objectpoints, imagepoints, k, None)
-        
-        # Convert rotation vector to rotation matrix
-        rmat, _ = cv2.Rodrigues(rvec)
+        try:
+            _, rvec, tvec, _ = cv2.solvePnPRansac(objectpoints, imagepoints, k, None)
+            # Convert rotation vector to rotation matrix
+            rmat, _ = cv2.Rodrigues(rvec)
+            # self.get_logger().info(f'Translation : {tvec} Rotation : {rmat}')
+        except:
+            self.get_logger().warn(f'PNP failed due to less features ! ')
+            rmat = np.eye(3)
+            tvec = np.zeros((1,4))
         
         return rmat, tvec, image1_points, image2_points
     
@@ -189,18 +203,22 @@ class VisualOdometryNode(Node):
         current_pose = np.eye(4)
         current_pose[0:3, 0:3] = rmat
         current_pose[0:3, 3] = tvec.T
+        
+        
 
         # Build the robot's pose from the initial position by multiplying previous and current poses
-        robot_pose = self.robot_pose[-1] @ np.linalg.inv(current_pose)
+        camera_pose = self.camera_pose[-1] @ np.linalg.inv(current_pose)
+        robot_pose = np.dot(self.camera_optical_to_base_tf,camera_pose)
         # self.get_logger().info(f'Pose:{robot_pose}')
+        self.camera_pose=np.append(self.camera_pose,camera_pose.reshape(1,4,4),axis=0)
         self.robot_pose=np.append(self.robot_pose,robot_pose.reshape(1,4,4),axis=0)
         # Calculate current camera position from origin
         position = self.robot_pose[self.curr_idx] @ np.array([0., 0., 0., 1.])
-
+        self.get_logger().info(f'Position {self.curr_idx} : {position}')
         # Build trajectory
         self.trajectory=np.append(self.trajectory,position[0:3].reshape(3,1),axis=1)
         self.publish_path(position)
-        self.get_logger().info(f'Trajectory obtained {self.trajectory}')
+        self.get_logger().info(f'Trajectory obtained {np.shape(self.trajectory)}')
 
     def publish_path(self,position):
         now_time = self.get_clock().now().to_msg()
@@ -216,7 +234,26 @@ class VisualOdometryNode(Node):
 
         self.path_publisher.publish(self.path_msg)
 
-    def visualize_matches(image1, kp1, image2, kp2, match):
+    def visualize_features(self,image,kp):
+        """
+        Visualize extracted features in the image
+
+        Arguments:
+        image -- a grayscale image
+        kp -- list of the extracted keypoints
+
+        Returns:
+        """
+        display = cv2.drawKeypoints(image, kp, None)
+        cv2.imshow("features",display)
+        if cv2.waitKey(1)==ord('q'):
+            cv2.destroyAllWindows()
+            raise SystemExit
+        # plt.figure(figsize=(16,12),dpi=100)
+        # plt.imshow(display)
+        # plt.show()
+
+    def visualize_matches(self,image1, kp1, image2, kp2, match):
         """
         Visualize corresponding matches in two images
 
@@ -231,8 +268,13 @@ class VisualOdometryNode(Node):
         image_matches -- an image showing the corresponding matches on both image1 and image2 or None if you don't use this function
         """
         image_matches = cv2.drawMatches(image1,kp1,image2,kp2,match,None,flags=2)
-        plt.figure(figsize=(16, 6), dpi=100)
-        plt.imshow(image_matches)
+        cv2.imshow("matches",image_matches)
+        if cv2.waitKey(1)==ord('q'):
+            raise SystemExit
+            
+        # plt.figure(figsize=(16, 6), dpi=100)
+        # plt.imshow(image_matches)
+        # plt.show()
 
 def main(args=None):
     rclpy.init(args=args)
